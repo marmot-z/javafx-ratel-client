@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import priv.zxw.ratel.landlords.client.javafx.ui.UIService;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
@@ -47,7 +48,7 @@ public class ClientListenerUtils {
         ClassLoader defaultClassLoader = ClientListenerUtils.class.getClassLoader();
         URL classWorkPath = ClientListenerUtils.class.getResource("");
         File classWorkDir = new File(classWorkPath.getPath());
-        return (List)loadClasses(defaultClassLoader, classWorkDir.listFiles(ClientListenerUtils::isNormalClass)).stream().filter((clazz) -> {
+        return (List)loadClasses(defaultClassLoader, classWorkDir.listFiles((FileFilter) ClientListenerUtils::isNormalClass)).stream().filter((clazz) -> {
             return clazz.getSuperclass() == AbstractClientListener.class;
         }).map((clazz) -> {
             return clazz;
