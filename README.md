@@ -23,7 +23,7 @@ mvn install package
 
 #### 启动`javafx`客户端
 ```shell
-jjava -jar target\javafx-ratel-client-#{version}.jar
+java -jar target\javafx-ratel-client-#{version}.jar
 ```
 
 ## 使用
