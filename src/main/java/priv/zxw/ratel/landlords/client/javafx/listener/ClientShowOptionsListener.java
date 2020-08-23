@@ -3,7 +3,9 @@ package priv.zxw.ratel.landlords.client.javafx.listener;
 
 import io.netty.channel.Channel;
 import javafx.application.Platform;
+import org.nico.ratel.landlords.channel.ChannelUtils;
 import org.nico.ratel.landlords.enums.ClientEventCode;
+import org.nico.ratel.landlords.enums.ServerEventCode;
 import priv.zxw.ratel.landlords.client.javafx.ui.view.Method;
 import priv.zxw.ratel.landlords.client.javafx.ui.view.lobby.LobbyController;
 import priv.zxw.ratel.landlords.client.javafx.ui.view.login.LoginController;
@@ -23,5 +25,7 @@ public class ClientShowOptionsListener extends AbstractClientListener {
             loginMethod.doClose();
             lobbyMethod.doShow();
         });
+
+        ChannelUtils.pushToServer(channel, ServerEventCode.CODE_GET_ROOMS, null);
     }
 }

@@ -5,7 +5,9 @@ import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.Channel;
 import org.nico.ratel.landlords.channel.ChannelUtils;
 import org.nico.ratel.landlords.entity.Poker;
+import org.nico.ratel.landlords.enums.ClientEventCode;
 import org.nico.ratel.landlords.enums.ServerEventCode;
+import priv.zxw.ratel.landlords.client.javafx.listener.ClientListenerUtils;
 import priv.zxw.ratel.landlords.client.javafx.util.BeanUtil;
 import priv.zxw.ratel.landlords.client.javafx.ui.event.IRoomEvent;
 
@@ -57,5 +59,10 @@ public class RoomEvent implements IRoomEvent {
         Channel channel = BeanUtil.getBean("channel");
 
         ChannelUtils.pushToServer(channel, ServerEventCode.CODE_CLIENT_EXIT, null);
+    }
+
+    @Override
+    public void gameOverExit() {
+        ClientListenerUtils.getListener(ClientEventCode.CODE_CLIENT_EXIT).handle(BeanUtil.getBean("channel"), null);
     }
 }

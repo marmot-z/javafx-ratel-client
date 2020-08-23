@@ -17,7 +17,7 @@ public class RoomPane {
         pane = new Pane();
         pane.getStyleClass().add("roomPane");
         pane.setLayoutX(35 + (index % 3) * (150 + MARGIN_LEFT));
-        pane.setLayoutY(65 + ((index / 3) * (120 + MARGIN_TOP)));
+        pane.setLayoutY((index / 3) * (120 + MARGIN_TOP));
 
         Label idLabel = new Label();
         idLabel.setLayoutX(6);

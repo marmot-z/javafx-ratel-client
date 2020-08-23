@@ -14,9 +14,5 @@ public class ClientShowOptionsPVEListener extends AbstractClientListener {
     }
 
     @Override
-    public void handle(Channel channel, String json) {
-        LobbyMethod lobbyMethod = (LobbyMethod) uiService.getMethod(LobbyController.METHOD_NAME);
-
-        Platform.runLater(lobbyMethod::toggleToPVEMenu);
-    }
+    public void handle(Channel channel, String json) {}
 }

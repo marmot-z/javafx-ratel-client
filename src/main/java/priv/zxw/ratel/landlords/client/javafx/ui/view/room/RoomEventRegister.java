@@ -74,6 +74,6 @@ public class RoomEventRegister implements EventRegister {
 
     private void back2Lobby() {
         uiObject.$("quitButton", Button.class).setOnAction(e -> roomEvent.exit());
-        uiObject.$("backLobbyButton", Button.class).setOnAction(e -> roomEvent.exit());
+        uiObject.$("backLobbyButton", Button.class).setOnAction(e -> roomEvent.gameOverExit());
     }
 }

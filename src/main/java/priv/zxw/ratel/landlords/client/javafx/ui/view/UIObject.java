@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import priv.zxw.ratel.landlords.client.javafx.util.BeanUtil;
 import priv.zxw.ratel.landlords.client.javafx.NettyClient;

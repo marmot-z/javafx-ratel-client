@@ -20,31 +20,15 @@ public class LobbyEventRegister implements EventRegister {
 
     @Override
     public void registerEvent() {
-        selectPVPModal();
-        selectPVEModal();
-        createPVPRoom();
-        createPVERoom();
+        popupCreateModal();
+        refreshRooms();
     }
 
-    private void selectPVPModal() {
-        uiObject.$("pvpModalButton", Button.class).setOnAction(e -> lobbyEvent.selectPVPModal());
+    private void popupCreateModal() {
+        uiObject.$("createRoomButton", Button.class).setOnAction(e -> ((LobbyController) uiObject).popupCreateModal());
     }
 
-    private void selectPVEModal() {
-        uiObject.$("pveModalButton", Button.class).setOnAction(e -> lobbyEvent.selectPVEModal());
-    }
-
-    private void createPVPRoom() {
-        uiObject.$("createRoomButton", Button.class).setOnAction(e -> lobbyEvent.createPVPRoom());
-    }
-
-    private static final int SIMPLE_MODAL = 1;
-    private static final int NORMAL_MODAL = 2;
-    private static final int DIFFICULT_MODAL = 3;
-
-    private void createPVERoom() {
-        uiObject.$("simpleModalButton", Button.class).setOnAction(e -> lobbyEvent.createPVERoom(SIMPLE_MODAL));
-        uiObject.$("normalModalButton", Button.class).setOnAction(e -> lobbyEvent.createPVERoom(NORMAL_MODAL));
-        uiObject.$("difficultModalButton", Button.class).setOnAction(e -> lobbyEvent.createPVERoom(DIFFICULT_MODAL));
+    private void refreshRooms() {
+        uiObject.$("refreshButton", Button.class).setOnAction(e -> lobbyEvent.showRooms());
     }
 }

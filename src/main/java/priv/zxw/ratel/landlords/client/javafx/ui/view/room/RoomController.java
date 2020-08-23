@@ -246,6 +246,19 @@ public class RoomController extends UIObject implements RoomMethod {
     @Override
     public void doClose() {
         super.close();
+
+        reset();
+    }
+
+    private void reset() {
+        prevPlayerPaneOperator.clear();
+        nextPlayerPaneOperator.clear();
+        playerPaneOperator.clear();
+
+        $("surplusPokersPane", Pane.class).getChildren().clear();
+        $("pokersPane", Pane.class).getChildren().clear();
+        $("gameOverPane", Pane.class).setVisible(false);
+        root.lookupAll(".pokerCount").forEach(node -> ((Label) node).setText("0"));
     }
 
     @Override
@@ -264,6 +277,8 @@ public class RoomController extends UIObject implements RoomMethod {
         void showMessage(String message);
 
         void play();
+
+        void clear();
     }
 
     private abstract class AbstractPlayerPaneOperator implements PlayerPaneOperator {
@@ -318,6 +333,18 @@ public class RoomController extends UIObject implements RoomMethod {
 
             renderPokers(pokers);
             refreshPlayerPokers(pokers);
+        }
+
+        @Override
+        public void clear() {
+            if (future != null && !future.isDone()) {
+                future.cancel();
+            }
+
+            playerShowPokersPane.getChildren().clear();
+
+            tips.setText("");
+            tips.setVisible(false);
         }
 
         protected abstract void renderPokers(List<Poker> pokers);

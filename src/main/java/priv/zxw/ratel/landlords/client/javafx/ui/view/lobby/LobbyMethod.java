@@ -8,11 +8,9 @@ import java.util.List;
 
 public interface LobbyMethod extends Method {
 
-    void toggleToPVPMenu();
-
-    void toggleToPVEMenu();
-
     void showRoomList(List<RoomInfo> roomInfoList);
 
     void joinRoomFail(String message, String commentMessage);
+
+    void popupCreateModal();
 }

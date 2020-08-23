@@ -33,6 +33,7 @@ public class ClientStartGameListener extends AbstractClientListener {
 
         CurrentRoomInfo currentRoomInfo = new CurrentRoomInfo(jsonObject.getIntValue("roomId"),
                                                               jsonObject.getString("roomOwner"));
+        currentRoomInfo.setGameOver(false);
         currentRoomInfo.setPlayer(user);
         currentRoomInfo.setPrevPlayerSurplusPokerCount(17);
         currentRoomInfo.setNextPlayerSurplusPokerCount(17);

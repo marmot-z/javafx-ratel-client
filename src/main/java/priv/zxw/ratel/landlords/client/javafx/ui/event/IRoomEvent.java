@@ -14,4 +14,6 @@ public interface IRoomEvent {
     void passRound();
 
     void exit();
+
+    void gameOverExit();
 }

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<AnchorPane prefHeight="220.0" prefWidth="200.0"
+            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@assets/css/lobby.css">
+    <children>
+        <!-- 对战模式选择 -->
+        <Pane fx:id="modalSelectPane" visible="true">
+            <Label layoutX="5" layoutY="5" style="-fx-font-size: 20;">模式选择</Label>
+
+            <Pane fx:id="pvpModalPane" layoutX="20.0" layoutY="50">
+                <Label styleClass="pvpModalLabel"></Label>
+                <Button layoutX="41" styleClass="modalButton">玩家对战</Button>
+            </Pane>
+
+            <Pane fx:id="pveModalPane" layoutX="20.0" layoutY="100">
+                <Label styleClass="pveModalLabel"></Label>
+                <Button layoutX="41" styleClass="modalButton">人机对战</Button>
+            </Pane>
+        </Pane>
+
+        <!-- 人机困难模式选择 -->
+        <Pane fx:id="pveModalMenuPane" visible="false">
+            <Label layoutX="5" layoutY="5" style="-fx-font-size: 20;">难度选择</Label>
+
+            <Pane fx:id="simpleModalPane" layoutX="20.0" layoutY="50">
+                <Label styleClass="simpleModalLabel"></Label>
+                <Button layoutX="41" styleClass="modalButton">简单模式</Button>
+            </Pane>
+
+            <Pane fx:id="normalModalPane" layoutX="20.0" layoutY="100">
+                <Label styleClass="normalModalLabel"></Label>
+                <Button layoutX="41" styleClass="modalButton">普通模式</Button>
+            </Pane>
+
+            <Pane fx:id="difficultModalPane" layoutX="20.0" layoutY="150">
+                <Label styleClass="difficultModalLabel"></Label>
+                <Button layoutX="41" styleClass="modalButton">困难模式</Button>
+            </Pane>
+        </Pane>
+    </children>
+</AnchorPane>

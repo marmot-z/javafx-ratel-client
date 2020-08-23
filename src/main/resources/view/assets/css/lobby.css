@@ -1,18 +1,4 @@
-#pveMenuPane {
-    -fx-pref-width: 400;
-    -fx-pref-height: 600;
-}
-
-#pvpModalButton,
-#pveModalButton {
-    -fx-pref-width: 200;
-    -fx-pref-height: 100;
-}
-
-#roomsPane {
-    -fx-pref-height: 400;
-    -fx-pref-width: 600;
-}
+/** ================== create/refresh button ================== */
 
 #createRoomButton {
     -fx-pref-width: 30;
@@ -23,8 +9,22 @@
     -fx-background-radius: 5;
     -fx-border-color: #dbd9d8;
     -fx-cursor: hand;
-    -fx-background-image: url("../image/add_0.png");
+    -fx-background-image: url("../image/add.png");
 }
+
+#refreshButton {
+    -fx-pref-width: 30;
+    -fx-pref-height: 30;
+    -fx-background-color: #dbd9d8;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-border-color: #dbd9d8;
+    -fx-cursor: hand;
+    -fx-background-image: url("../image/refresh.png");
+}
+
+/** ================== title label ================== */
 
 .title {
     -fx-pref-width: 600;
@@ -35,6 +35,85 @@
 
 .roomListTitle {
     -fx-font-size: 20;
+}
+
+/** ================== noRoomsTips Pane ================== */
+
+.noRoomsTips {
+    -fx-text-alignment: center;
+    -fx-font-size: 25;
+    -fx-text-fill: silver;
+    -fx-opacity: 0.8;
+}
+
+/** ================== modal pane/label ================== */
+
+#pvpModalPane,
+#pveModalPane,
+#simpleModalPane,
+#normalModalPane,
+#difficultModalPane {
+    -fx-pref-width: 140;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: silver;
+    -fx-cursor: hand;
+}
+
+#pvpModalPane:hover,
+#pveModalPane:hover,
+#simpleModalPane:hover,
+#normalModalPane:hover,
+#difficultModalPane:hover {
+    -fx-background-color: silver;
+}
+
+.modalButton {
+    -fx-pref-height: 41;
+    -fx-background-insets: 0;
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+
+.pvpModalLabel {
+    -fx-pref-width: 41;
+    -fx-pref-height: 41;
+    -fx-background-image: url("../image/pvp-icon.png");
+    -fx-background-repeat: no-repeat;
+}
+
+.pveModalLabel {
+    -fx-pref-width: 41;
+    -fx-pref-height: 41;
+    -fx-background-image: url("../image/pve-icon.png");
+    -fx-background-repeat: no-repeat;
+}
+
+.simpleModalLabel {
+    -fx-pref-width: 41;
+    -fx-pref-height: 41;
+    -fx-background-image: url("../image/simple-icon.png");
+    -fx-background-repeat: no-repeat;
+}
+
+.normalModalLabel {
+    -fx-pref-width: 41;
+    -fx-pref-height: 41;
+    -fx-background-image: url("../image/normal-icon.png");
+    -fx-background-repeat: no-repeat;
+}
+
+.difficultModalLabel {
+    -fx-pref-width: 41;
+    -fx-pref-height: 41;
+    -fx-background-image: url("../image/difficult-icon.png");
+    -fx-background-repeat: no-repeat;
+}
+
+/** ================== room pane ================== */
+
+#roomsPane {
+    -fx-pref-height: 400;
+    -fx-pref-width: 600;
 }
 
 .roomPane {
@@ -70,10 +149,4 @@
 }
 
 .roomPane > .playerCountLabel {
-}
-
-.pveModalButton {
-    -fx-pref-width: 200;
-    -fx-pref-height: 40;
-    -fx-font-size: 20;
 }

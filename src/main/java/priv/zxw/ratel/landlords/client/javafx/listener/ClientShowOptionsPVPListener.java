@@ -16,10 +16,5 @@ public class ClientShowOptionsPVPListener extends AbstractClientListener {
     }
 
     @Override
-    public void handle(Channel channel, String json) {
-        LobbyMethod lobbyMethod = (LobbyMethod) uiService.getMethod(LobbyController.METHOD_NAME);
-
-        Platform.runLater(lobbyMethod::toggleToPVPMenu);
-        ChannelUtils.pushToServer(channel, ServerEventCode.CODE_GET_ROOMS, null);
-    }
+    public void handle(Channel channel, String json) {}
 }

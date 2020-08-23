@@ -1,15 +1,17 @@
 package priv.zxw.ratel.landlords.client.javafx.ui.view.lobby;
 
 
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
+import javafx.stage.StageStyle;
 import priv.zxw.ratel.landlords.client.javafx.entity.RoomInfo;
 import priv.zxw.ratel.landlords.client.javafx.ui.event.ILobbyEvent;
-import priv.zxw.ratel.landlords.client.javafx.ui.view.util.AlertUtils;
 import priv.zxw.ratel.landlords.client.javafx.ui.view.UIObject;
+import priv.zxw.ratel.landlords.client.javafx.ui.view.util.AlertUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,6 +24,8 @@ public class LobbyController extends UIObject implements LobbyMethod {
     private ILobbyEvent lobbyEvent;
     private LobbyEventRegister lobbyEventRegister;
 
+    private LobbyModalController lobbyModalController;
+
     public LobbyController(ILobbyEvent lobbyEvent) throws IOException {
         super();
 
@@ -30,48 +34,48 @@ public class LobbyController extends UIObject implements LobbyMethod {
 
         this.lobbyEvent = lobbyEvent;
 
+        this.lobbyModalController = new LobbyModalController();
+
         registerEvent();
+
+        setElementTooltip();
     }
 
-    @Override
-    public void registerEvent() {
-        lobbyEventRegister = new LobbyEventRegister(this, lobbyEvent);
-    }
-
-    @Override
-    public void toggleToPVPMenu() {
-        Pane modalPane = $("modalPane", Pane.class);
-        modalPane.setVisible(false);
-
-        Pane pvpMenuPane = $("pvpMenuPane", Pane.class);
-        pvpMenuPane.setVisible(true);
-    }
-
-    @Override
-    public void toggleToPVEMenu() {
-        Pane modalPane = $("modalPane", Pane.class);
-        modalPane.setVisible(false);
-
-        Pane pveMenuPane = $("pveMenuPane", Pane.class);
-        pveMenuPane.setVisible(true);
+    private void setElementTooltip () {
+        $("createRoomButton", Button.class).setTooltip(new Tooltip("创建游戏"));
+        $("refreshButton", Button.class).setTooltip(new Tooltip("刷新"));
     }
 
     @Override
     public void showRoomList(List<RoomInfo> roomInfoList) {
-        Pane roomsPane = $("roomsPane", Pane.class);
+        Pane roomsContainer = $("roomsContainer", Pane.class);
+
+        roomsContainer.getChildren().clear();
+
+        if (roomInfoList == null || roomInfoList.isEmpty()) {
+            Pane noRoomsTipsPane = $("noRoomsTipsPane", Pane.class);
+            noRoomsTipsPane.setVisible(true);
+
+            return;
+        }
 
         for (int i = 0, size = roomInfoList.size(); i < size; i++) {
             RoomInfo roomInfo = roomInfoList.get(i);
             Pane roomPane = new RoomPane(roomInfo, i).getPane();
             roomPane.setOnMouseClicked(e -> lobbyEvent.joinRoom(roomInfo.getRoomId()));
 
-            roomsPane.getChildren().add(roomPane);
+            roomsContainer.getChildren().add(roomPane);
         }
     }
 
     @Override
     public void joinRoomFail(String message, String commentMessage) {
         AlertUtils.warn(message, commentMessage);
+    }
+
+    @Override
+    public void popupCreateModal() {
+        lobbyModalController.show();
     }
 
     @Override
@@ -87,5 +91,42 @@ public class LobbyController extends UIObject implements LobbyMethod {
     @Override
     public void doClose() {
         super.close();
+    }
+
+    @Override
+    public void registerEvent() {
+        lobbyEventRegister = new LobbyEventRegister(this, lobbyEvent);
+    }
+
+    class LobbyModalController extends UIObject {
+        private static final String RESOURCE_NAME = "view/lobby-modal.fxml";
+
+        private LobbyModalEventRegister lobbyModalEventRegister;
+
+        LobbyModalController() throws IOException {
+            super();
+
+            root = FXMLLoader.load(getClass().getClassLoader().getResource(RESOURCE_NAME));
+            setScene(new Scene(root));
+            initModality(Modality.APPLICATION_MODAL);
+
+            // 去除title
+            setTitle("");
+
+            // 重写close事件
+            setOnCloseRequest(e -> close());
+
+            registerEvent();
+        }
+
+        public void toggleToPVEModalMenu() {
+            $("modalSelectPane", Pane.class).setVisible(false);
+            $("pveModalMenuPane", Pane.class).setVisible(true);
+        }
+
+        @Override
+        public void registerEvent() {
+            this.lobbyModalEventRegister = new LobbyModalEventRegister(this, lobbyEvent);
+        }
     }
 }

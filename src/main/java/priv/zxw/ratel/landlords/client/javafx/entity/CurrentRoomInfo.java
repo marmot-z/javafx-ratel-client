@@ -10,6 +10,8 @@ public class CurrentRoomInfo {
     private int roomId;
     private String roomOwner;
 
+    private boolean isGameOver = false;
+
     private User player;
     private String prevPlayerName;
     private ClientType prevPlayerRole;
@@ -42,6 +44,14 @@ public class CurrentRoomInfo {
             prevPlayerRole = ClientType.PEASANT;
             player.setRole(ClientType.PEASANT);
         }
+    }
+
+    public boolean isGameOver() {
+        return isGameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        isGameOver = gameOver;
     }
 
     public String getRecentPlayerName() {
