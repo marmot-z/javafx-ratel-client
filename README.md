@@ -27,22 +27,22 @@ java -jar target\javafx-ratel-client-#{version}.jar
 ```
 
 ## 使用
-1. 选择服务器地址连接
+1. 选择服务器地址连接  
 ![连接服务器](images/connect.png)  
-2. 输入昵称
+2. 输入昵称  
 ![输入昵称](images/input-nickname.png)  
-3. 选择模式
+3. 选择模式  
 ![选择模式](images/select-modal.png)  
-4. 选择房间
+4. 选择房间  
 ![选择房间](images/choose-room.png)  
-5. 开始游戏
+5. 开始游戏  
 ![开始游戏](images/play.png)  
 
 ## TODO List
 - [X] PVE模式  
-- [ ] PVP模式  
+- [X] PVP模式  
 - [ ] 优化界面    
-- [ ] 页面切换  
+- [X] 页面切换  
 - [ ] 挂机检测
 
 ## 贡献与反馈
