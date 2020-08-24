@@ -29,8 +29,14 @@ public class User {
         currentRoomId = -1;
         playing = false;
         role = null;
+        if (pokers != null) {
+            pokers.clear();
+            pokers = null;
+        }
+    }
+
+    public void clearPokers() {
         pokers.clear();
-        pokers = null;
     }
 
     public void addPokers(List<Poker> pokers) {

@@ -70,6 +70,13 @@ public class RoomController extends UIObject implements RoomMethod {
         $("nextPlayerPane", Pane.class).lookup(".tips").setVisible(false);
         $("quitButton", Button.class).setText("退出");
 
+        // 设置玩家名称
+        CurrentRoomInfo currentRoomInfo = BeanUtil.getBean("currentRoomInfo");
+
+        $("prevPlayerNickname", Label.class).setText(currentRoomInfo.getPrevPlayerName());
+        $("nextPlayerNickname", Label.class).setText(currentRoomInfo.getNextPlayerName());
+        $("playerNickname", Label.class).setText(currentRoomInfo.getPlayer().getNickname());
+
         initPokers(pokers);
     }
 
@@ -134,17 +141,32 @@ public class RoomController extends UIObject implements RoomMethod {
     }
 
     @Override
+    public void robLandlord(String playerName) {
+        getPlayerPaneOperatorByPlayerName(playerName).robLandlord();
+    }
+
+    @Override
+    public void clearTime(String playerName) {
+        getPlayerPaneOperatorByPlayerName(playerName).clearTimer();
+    }
+
+    @Override
     public void refreshPlayPokers(List<Poker> pokers) {
         final int pokersPaneWidth = 870;
         final int pokerPaneWidth = 110;
+
+        // 可能之前有牌，先清理再填充
+        Pane pokersPane = $("pokersPane", Pane.class);
+        pokersPane.getChildren().clear();
+
+        if (pokers == null || pokers.isEmpty()) {
+            return;
+        }
+
         int size = pokers.size();
         // 第一张牌的x轴偏移量
         int firstPokerPaneOffsetX = ((pokersPaneWidth - pokerPaneWidth) - PokerPane.MARGIN_LEFT * (size -1)) / 2;
 
-        Pane pokersPane = $("pokersPane", Pane.class);
-
-        // 可能之前有牌，先清理再填充
-        pokersPane.getChildren().clear();
         for (int i = 0; i < size; i++) {
             pokersPane.getChildren().add(new PokerPane(i, firstPokerPaneOffsetX, pokers.get(i)).getPane());
         }
@@ -210,10 +232,6 @@ public class RoomController extends UIObject implements RoomMethod {
         $("prevPlayerRole", Label.class).setText(ClientType.LANDLORD.equals(currentRoomInfo.getPrevPlayerRole()) ? "地主" : "农民");
         $("nextPlayerRole", Label.class).setText(ClientType.LANDLORD.equals(currentRoomInfo.getNextPlayerRole()) ? "地主" : "农民");
         $("playerRole", Label.class).setText(ClientType.LANDLORD.equals(currentRoomInfo.getPlayer().getRole()) ? "地主" : "农民");
-
-        $("prevPlayerNickname", Label.class).setText(currentRoomInfo.getPrevPlayerName());
-        $("nextPlayerNickname", Label.class).setText(currentRoomInfo.getNextPlayerName());
-        $("playerNickname", Label.class).setText(currentRoomInfo.getPlayer().getNickname());
     }
 
     @Override
@@ -255,10 +273,26 @@ public class RoomController extends UIObject implements RoomMethod {
         nextPlayerPaneOperator.clear();
         playerPaneOperator.clear();
 
+        // 牌清理
         $("surplusPokersPane", Pane.class).getChildren().clear();
         $("pokersPane", Pane.class).getChildren().clear();
-        $("gameOverPane", Pane.class).setVisible(false);
+        $("prevPlayerPokersPane", Pane.class).setVisible(false);
+        $("nextPlayerPokersPane", Pane.class).setVisible(false);
         root.lookupAll(".pokerCount").forEach(node -> ((Label) node).setText("0"));
+
+        // 结束面板隐藏
+        $("gameOverPane", Pane.class).setVisible(false);
+
+        // 等待面板显示
+        $("waitingPane", Pane.class).setVisible(true);
+
+        // 用户信息隐藏
+        $("prevPlayerRole", Label.class).setText("");
+        $("prevPlayerNickname", Label.class).setText("");
+        $("nextPlayerRole", Label.class).setText("");
+        $("nextPlayerNickname", Label.class).setText("");
+        $("playerRole", Label.class).setText("");
+        $("playerNickname", Label.class).setText("");
     }
 
     @Override
@@ -272,6 +306,10 @@ public class RoomController extends UIObject implements RoomMethod {
     }
 
     interface PlayerPaneOperator {
+        void robLandlord();
+
+        void clearTimer();
+
         void showPokers(List<Poker> pokers);
 
         void showMessage(String message);
@@ -298,14 +336,19 @@ public class RoomController extends UIObject implements RoomMethod {
 
         @Override
         public synchronized void showMessage(String message) {
-            if (future != null && !future.isDone()) {
-                future.cancel();
-            }
+            clearTimer();
 
             playerShowPokersPane.getChildren().clear();
 
             tips.setText(message);
             tips.setVisible(true);
+        }
+
+        @Override
+        public synchronized void clearTimer() {
+            if (future != null && !future.isDone()) {
+                future.cancel();
+            }
         }
 
         @Override
@@ -324,10 +367,19 @@ public class RoomController extends UIObject implements RoomMethod {
         }
 
         @Override
-        public synchronized void showPokers(List<Poker> pokers) {
-            if (future != null && !future.isDone()) {
-                future.cancel();
+        public synchronized void robLandlord() {
+            if (future == null || future.isDone()) {
+                CountDownTask task = new CountDownTask(timer, 30,
+                        node -> {},
+                        surplusTime -> Platform.runLater(() -> timer.setText(surplusTime.toString())));
+
+                future = task.start();
             }
+        }
+
+        @Override
+        public synchronized void showPokers(List<Poker> pokers) {
+            clearTimer();
 
             tips.setVisible(false);
 
@@ -337,9 +389,7 @@ public class RoomController extends UIObject implements RoomMethod {
 
         @Override
         public void clear() {
-            if (future != null && !future.isDone()) {
-                future.cancel();
-            }
+            clearTimer();
 
             playerShowPokersPane.getChildren().clear();
 
@@ -442,6 +492,19 @@ public class RoomController extends UIObject implements RoomMethod {
         }
 
         @Override
+        public synchronized void robLandlord() {
+            showRobButtons();
+
+            if (future == null || future.isDone()) {
+                CountDownTask task = new CountDownTask(timer, 30,
+                        node -> hideRobButtons(),
+                        surplusTime -> Platform.runLater(() -> timer.setText(surplusTime.toString())));
+
+                future = task.start();
+            }
+        }
+
+        @Override
         public void showPokers(List<Poker> pokers) {
             hidePokerPlayButtons();
 
@@ -453,6 +516,13 @@ public class RoomController extends UIObject implements RoomMethod {
             super.play();
 
             showPokerPlayButtons();
+        }
+
+        @Override
+        public void clear() {
+            super.clear();
+
+            hidePokerPlayButtons();
         }
 
         @Override

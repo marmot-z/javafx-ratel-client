@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import org.nico.ratel.landlords.entity.ClientSide;
 import org.nico.ratel.landlords.entity.Poker;
 import org.nico.ratel.landlords.enums.ClientEventCode;
+import priv.zxw.ratel.landlords.client.javafx.ui.view.util.AlertUtils;
 import priv.zxw.ratel.landlords.client.javafx.util.BeanUtil;
 import priv.zxw.ratel.landlords.client.javafx.entity.CurrentRoomInfo;
 import priv.zxw.ratel.landlords.client.javafx.entity.User;
@@ -40,7 +41,17 @@ public class ClientStartGameListener extends AbstractClientListener {
         BeanUtil.addBean("currentRoomInfo", currentRoomInfo);
 
         // 计算出玩家的顺序
-        List<ClientSide> clientOrderList = jsonObject.getJSONArray("clientOrderList").toJavaList(ClientSide.class);
+        List<ClientSide> clientOrderList;
+        try {
+             clientOrderList = jsonObject.getJSONArray("clientOrderList").toJavaList(ClientSide.class);
+        } catch (Exception e) {
+            // 服务器不支持提醒
+            Platform.runLater(() ->
+                AlertUtils.error("服务器版本过低", "服务器版本过低，不支持当前客户端!\n请连接至最新版本的服务端进行游戏。")
+            );
+            return;
+        }
+
         ClientSide clientSide = clientOrderList.stream().filter(c -> user.getNickname().equals(c.getNickname())).findFirst().get();
         currentRoomInfo.setPrevPlayerName(clientSide.getPre().getNickname());
         currentRoomInfo.setNextPlayerName(clientSide.getNext().getNickname());

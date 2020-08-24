@@ -22,6 +22,10 @@ public interface RoomMethod extends Method {
 
     void play(String playerName);
 
+    void robLandlord(String playerName);
+
+    void clearTime(String playerName);
+
     void refreshPlayPokers(List<Poker> pokers);
 
     void refreshPrevPlayerPokers(int pokerCount);

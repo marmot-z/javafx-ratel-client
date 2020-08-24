@@ -30,12 +30,12 @@
                 <Button layoutX="41" styleClass="modalButton">简单模式</Button>
             </Pane>
 
-            <Pane fx:id="normalModalPane" layoutX="20.0" layoutY="100">
+            <Pane fx:id="normalModalPane" layoutX="20.0" layoutY="100" disable="true">
                 <Label styleClass="normalModalLabel"></Label>
                 <Button layoutX="41" styleClass="modalButton">普通模式</Button>
             </Pane>
 
-            <Pane fx:id="difficultModalPane" layoutX="20.0" layoutY="150">
+            <Pane fx:id="difficultModalPane" layoutX="20.0" layoutY="150" disable="true">
                 <Label styleClass="difficultModalLabel"></Label>
                 <Button layoutX="41" styleClass="modalButton">困难模式</Button>
             </Pane>

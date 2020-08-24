@@ -77,6 +77,17 @@ public class CountDownTask {
             }
         }
 
+        public void done() {
+            if (done) {
+                return;
+            }
+
+            done = true;
+            interrupt();
+
+            finallyExecuteConsumer.accept(targetElement);
+        }
+
         public void cancel() {
             if (done) {
                 return;

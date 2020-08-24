@@ -41,6 +41,7 @@ public class ClientConfirmLandlordListener extends AbstractClientListener {
         RoomMethod method = (RoomMethod) uiService.getMethod(RoomController.METHOD_NAME);
 
         Platform.runLater(() -> {
+            method.clearTime(landlordName);
             method.showSurplusPokers(surplusPokerList);
             method.hideRobButtons();
             method.setLandLord(landlordName);

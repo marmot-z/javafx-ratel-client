@@ -114,7 +114,7 @@ public class LobbyController extends UIObject implements LobbyMethod {
             setTitle("");
 
             // 重写close事件
-            setOnCloseRequest(e -> close());
+            setOnCloseRequest(e -> doClose());
 
             registerEvent();
         }
@@ -127,6 +127,17 @@ public class LobbyController extends UIObject implements LobbyMethod {
         @Override
         public void registerEvent() {
             this.lobbyModalEventRegister = new LobbyModalEventRegister(this, lobbyEvent);
+        }
+
+        public void doClose() {
+            super.close();
+
+            reset();
+        }
+
+        private void reset() {
+            $("modalSelectPane", Pane.class).setVisible(true);
+            $("pveModalMenuPane", Pane.class).setVisible(false);
         }
     }
 }
