@@ -6,7 +6,7 @@
 
     <groupId>priv.zxw.ratel</groupId>
     <artifactId>javafx-ratel-client</artifactId>
-    <version>v0.1.0</version>
+    <version>v0.2.0</version>
 
     <properties>
         <java.version.source>1.8</java.version.source>
