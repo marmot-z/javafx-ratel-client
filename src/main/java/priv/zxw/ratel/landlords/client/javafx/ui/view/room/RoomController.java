@@ -273,6 +273,10 @@ public class RoomController extends UIObject implements RoomMethod {
         nextPlayerPaneOperator.clear();
         playerPaneOperator.clear();
 
+        // 按钮隐藏
+        hideRobButtons();
+        hidePokerPlayButtons();
+
         // 牌清理
         $("surplusPokersPane", Pane.class).getChildren().clear();
         $("pokersPane", Pane.class).getChildren().clear();
