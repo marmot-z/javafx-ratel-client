@@ -18,28 +18,65 @@ import java.util.stream.Stream;
 
 public class ClientListenerUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientListenerUtils.class);
-    private static final Map<ClientEventCode, ClientListener> LISTENER_MAP = new HashMap(16);
-    private static final String JAR_FILE_NAME = "javafx-ratel-client";
-    private static final String PACKAGE_NAME = "priv/zxw/ratel/landlords/client/javafx/listener";
 
-    public ClientListenerUtils() {
-    }
+    /** code - listener 映射 */
+    private static final Map<ClientEventCode, ClientListener> LISTENER_MAP = new HashMap<>(16);
 
+    /**
+     * 获取code对应的事件监听器
+     *
+     * @param code 事件编码
+     * @return  code对应的事件监听器，如果不存在对应的事件监听器则返回null
+     */
     public static ClientListener getListener(ClientEventCode code) {
-        ClientListener clientListener = (ClientListener)LISTENER_MAP.get(code);
-        return clientListener;
+        return LISTENER_MAP.get(code);
     }
 
     public static ClientEventCode[] supportCodes() {
-        return (ClientEventCode[])LISTENER_MAP.keySet().toArray(new ClientEventCode[0]);
+        return LISTENER_MAP.keySet().toArray(new ClientEventCode[] {});
     }
 
     public static void setUIService(UIService uiService) {
-        Iterator var1 = LISTENER_MAP.values().iterator();
+        for (ClientListener listener : LISTENER_MAP.values()) {
+            listener.setUIService(uiService);
+        }
+    }
+
+    private static final String JAR_FILE_NAME = "javafx-ratel-client";
+
+    static {
+        List<Class<ClientListener>> listenerClassList;
+        try {
+            listenerClassList = findListener();
+        } catch (NullPointerException var9) {
+            String userDir = System.getProperty("user.dir");
+            File userDirFile = new File(userDir);
+            File jarFile = Stream.of(userDirFile.listFiles())
+                                .filter((file) -> file.getName().contains(JAR_FILE_NAME))
+                                .findFirst()
+                                .orElseThrow(() ->
+                                        new RuntimeException("当前 " + userDir + " 目录下找不到 " + "javafx-ratel-client" + "-{version}.jar 包"));
+
+            try {
+                listenerClassList = findListenerInJarFile(new JarFile(jarFile.getAbsoluteFile()));
+            } catch (IOException var8) {
+                throw new RuntimeException(var8);
+            }
+        }
+
+        Iterator<Class<ClientListener>> var1 = listenerClassList.iterator();
 
         while(var1.hasNext()) {
-            ClientListener listener = (ClientListener)var1.next();
-            listener.setUIService(uiService);
+            Class<ClientListener> clazz = var1.next();
+
+            try {
+                ClientListener listener = clazz.newInstance();
+                LISTENER_MAP.put(listener.getCode(), listener);
+            } catch (InstantiationException var6) {
+                LOGGER.warn(clazz.getName() + " 不能被实例化");
+            } catch (IllegalAccessException var7) {
+                LOGGER.warn(clazz.getName() + " 没有默认构造函数或默认构造函数不可访问", var7);
+            }
         }
 
     }
@@ -48,11 +85,12 @@ public class ClientListenerUtils {
         ClassLoader defaultClassLoader = ClientListenerUtils.class.getClassLoader();
         URL classWorkPath = ClientListenerUtils.class.getResource("");
         File classWorkDir = new File(classWorkPath.getPath());
-        return (List)loadClasses(defaultClassLoader, classWorkDir.listFiles((FileFilter) ClientListenerUtils::isNormalClass)).stream().filter((clazz) -> {
-            return clazz.getSuperclass() == AbstractClientListener.class;
-        }).map((clazz) -> {
-            return clazz;
-        }).collect(Collectors.toList());
+
+        return loadClasses(defaultClassLoader, classWorkDir.listFiles((FileFilter) ClientListenerUtils::isNormalClass))
+                .stream()
+                .filter(clazz -> clazz.getSuperclass() == AbstractClientListener.class)
+                .map(clazz -> (Class<ClientListener>) clazz)
+                .collect(Collectors.toList());
     }
 
     private static boolean isNormalClass(File file) {
@@ -67,24 +105,24 @@ public class ClientListenerUtils {
 
     private static List<Class<?>> loadClasses(ClassLoader classLoader, File[] classFiles) {
         String classpath = classLoader.getResource("").getPath();
-        List<Class<?>> classList = new ArrayList(classFiles.length);
-        File[] var4 = classFiles;
-        int var5 = classFiles.length;
 
-        for(int var6 = 0; var6 < var5; ++var6) {
-            File classFile = var4[var6];
+        List<Class<?>> classList = new ArrayList<>(classFiles.length);
+        for (File classFile : classFiles) {
             String absolutePath = classFile.getAbsolutePath();
-            String classFullName = absolutePath.substring(classpath.length() - 1, absolutePath.lastIndexOf(".")).replace(File.separator, ".");
+            String classFullName = absolutePath.substring(classpath.length() - 1, absolutePath.lastIndexOf("."))
+                    .replace(File.separator, ".");
 
             try {
                 classList.add(classLoader.loadClass(classFullName));
-            } catch (ClassNotFoundException var11) {
+            } catch (ClassNotFoundException e) {
                 LOGGER.warn("默认类加载器在 {} 路径下没有找到 {} 类", classpath, classFullName);
             }
         }
 
         return classList;
     }
+
+    private static final String PACKAGE_NAME = "priv/zxw/ratel/landlords/client/javafx/listener";
 
     private static List<Class<ClientListener>> findListenerInJarFile(JarFile jarFile) {
         List<Class<?>> classes = new ArrayList(10);
@@ -94,10 +132,12 @@ public class ClientListenerUtils {
         while(enumeration.hasMoreElements()) {
             JarEntry jarEntry = (JarEntry)enumeration.nextElement();
             String entryName = jarEntry.getName();
+
             LOGGER.info(entryName);
-            boolean isMaybeListenerClass = entryName.contains("priv/zxw/ratel/landlords/client/javafx/listener") && isNormalClass(entryName);
+
+            boolean isMaybeListenerClass = entryName.contains(PACKAGE_NAME) && isNormalClass(entryName);
             if (isMaybeListenerClass) {
-                String classFullName = entryName.substring(entryName.lastIndexOf("priv/zxw/ratel/landlords/client/javafx/listener"), entryName.lastIndexOf(".")).replace("/", ".");
+                String classFullName = entryName.substring(entryName.lastIndexOf(PACKAGE_NAME), entryName.lastIndexOf(".")).replace("/", ".");
 
                 try {
                     classes.add(defaultClassLoader.loadClass(classFullName));
@@ -107,47 +147,8 @@ public class ClientListenerUtils {
             }
         }
 
-        return (List)classes.stream().filter((clazz) -> {
-            return clazz.getSuperclass() == AbstractClientListener.class;
-        }).map((clazz) -> {
-            return clazz;
-        }).collect(Collectors.toList());
-    }
-
-    static {
-        List listenerClassList = null;
-        try {
-            listenerClassList = findListener();
-        } catch (NullPointerException var9) {
-            String userDir = System.getProperty("user.dir");
-            File userDirFile = new File(userDir);
-            File jarFile = (File) Stream.of(userDirFile.listFiles()).filter((file) -> {
-                return file.getName().contains("javafx-ratel-client");
-            }).findFirst().orElseThrow(() -> {
-                return new RuntimeException("当前 " + userDir + " 目录下找不到 " + "javafx-ratel-client" + "-{version}.jar 包");
-            });
-
-            try {
-                listenerClassList = findListenerInJarFile(new JarFile(jarFile.getAbsoluteFile()));
-            } catch (IOException var8) {
-            }
-        }
-
-        Iterator var1 = listenerClassList.iterator();
-
-        while(var1.hasNext()) {
-            Class clazz = (Class)var1.next();
-
-            try {
-                ClientListener listener = (ClientListener)clazz.newInstance();
-                LISTENER_MAP.put(listener.getCode(), listener);
-            } catch (InstantiationException var6) {
-                LOGGER.warn(clazz.getName() + " 不能被实例化");
-            } catch (IllegalAccessException var7) {
-                LOGGER.warn(clazz.getName() + " 没有默认构造函数或默认构造函数不可访问", var7);
-            }
-        }
-
+        return (List) classes.stream()
+                             .filter((clazz) -> clazz.getSuperclass() == AbstractClientListener.class)
+                             .collect(Collectors.toList());
     }
 }
-
