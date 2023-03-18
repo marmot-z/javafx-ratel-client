@@ -109,7 +109,7 @@ public class ClientListenerUtils {
         List<Class<?>> classList = new ArrayList<>(classFiles.length);
         for (File classFile : classFiles) {
             String absolutePath = classFile.getAbsolutePath();
-            String classFullName = absolutePath.substring(classpath.length() - 1, absolutePath.lastIndexOf("."))
+            String classFullName = absolutePath.substring(classpath.length(), absolutePath.lastIndexOf("."))
                     .replace(File.separator, ".");
 
             try {
